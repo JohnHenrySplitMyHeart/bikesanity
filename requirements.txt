@@ -1,0 +1,6 @@
+beautifulsoup4>=4.8.2,
+requests>=2.22.0,
+lxml>=4.5.2'
+html5lib>=1.1,
+gpxpy>=1.4.2,
+Click>=7.0
