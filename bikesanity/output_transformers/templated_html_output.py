@@ -89,12 +89,12 @@ class TemplatedHtmlOutput:
                 ul_tag.append(li_tag)
 
                 page_idx += 1
-            elif toc_item.subtitle:
+            elif toc_item.title:
                 if ul_tag:
                     toc_div.append(ul_tag)
                     ul_tag = None
 
-                self.output_subtitle(soup, toc_div,toc_item.subtitle)
+                self.output_subtitle(soup, toc_div, toc_item.title)
 
         if ul_tag:
             toc_div.append(ul_tag)

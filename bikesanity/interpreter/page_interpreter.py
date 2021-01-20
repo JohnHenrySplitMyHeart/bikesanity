@@ -211,7 +211,7 @@ class PageInterpreter(InterpreterBase):
 
 
     def retrieve_page(self, journal_id, original_id, url):
-        log_handler.log.info('Downloading page {0} for journal {1}'.format(original_id, journal_id), extra={'journal_id': journal_id})
+        log_handler.log.info('Retrieving page {0} for journal {1}'.format(original_id, journal_id), extra={'journal_id': journal_id})
         # Download the page HTML
         page_html = self.retriever.retrieve_page(url, original_id, error_message="Error code in retrieving journal page html: {0}")
         page = Page(journal_id, original_id, page_html)

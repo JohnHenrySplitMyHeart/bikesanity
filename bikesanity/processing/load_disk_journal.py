@@ -51,7 +51,7 @@ class LoadDiskJournal:
             log_handler.log.warning('Processing multiple pages for {0}'.format(journal_id))
             # Iterate over all the retrieved pages and pull them separately.
             for toc in journal.toc:
-                if toc.original_id:
+                if toc.url:
                     page = self._process_page(toc.original_id)
                     toc.set_page(page)
         else:
