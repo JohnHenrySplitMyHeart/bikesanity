@@ -42,17 +42,6 @@ class Page:
         else:
             self.date_statement = distance_statement
 
-    def upload_original_source(self, s3_handler):
-        # Upload the HTML itself
-        s3_handler.upload_to_originals(self.journal_id, '{0}.html'.format(self.original_id), self.original_html)
-
-        # Iterate over content and upload
-        for content in self.contents:
-            if isinstance(content, Image):
-                s3_handler.upload_image_to_originals(self.journal_id, content)
-            elif isinstance(content, Map):
-                s3_handler.upload_map_to_originals(self.journal_id, content)
-
     def _persist_resources(self, persist_image, persist_map):
         self.maps = []
 
@@ -62,9 +51,6 @@ class Page:
                 persist_image(content)
             elif isinstance(content, Map):
                 persist_map(content)
-
-    def upload_resources(self, s3_handler):
-        self._persist_resources(s3_handler.upload_image_resource, s3_handler.upload_map_resource)
 
     def save_resources(self, local_handler):
         self._persist_resources(local_handler.save_image_resource, local_handler.save_map_resource)

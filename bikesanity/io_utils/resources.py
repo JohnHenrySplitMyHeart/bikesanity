@@ -1,3 +1,4 @@
+import pickle
 import bikesanity
 import pkg_resources
 
@@ -20,3 +21,8 @@ def get_resource_string(paths):
 def get_resource_stream(paths):
     resource_path = _resource_path(paths)
     return pkg_resources.resource_stream(resource_package, resource_path)
+
+
+def unserialize_resource_stream(paths):
+    with get_resource_stream(paths) as stream:
+        return pickle.load(stream)

@@ -2,7 +2,7 @@
 
 ### What is this?
 
-In this repository is the complete code needed to download, extract, interpret, and export - in an attractive, completely new and _mobile friendly_ HTML format - bicycle touring journals available in the popular [crazyguyonabike.com](https:/crazyguyonabike.com) (CGOAB) website.
+In this repository is the complete code needed to download, extract, interpret, and export - in an attractive, completely new and _mobile friendly_ HTML format - bicycle touring journals available in the popular [crazyguyonabike.com](https://www.crazyguyonabike.com) (CGOAB) website.
 
 You can use it download and create backups of your journals, to interpret them into a form where the content is easier to extract, and to re-format them in various formats readable offline.
 

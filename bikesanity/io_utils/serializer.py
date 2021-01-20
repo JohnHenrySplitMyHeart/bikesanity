@@ -4,7 +4,7 @@ from io import BytesIO
 from bikesanity.entities.journal import Journal
 
 
-class Serializer():
+class Serializer:
 
     def serialize_journal(self, journal: Journal):
         buffer = BytesIO()

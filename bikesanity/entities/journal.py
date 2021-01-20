@@ -47,17 +47,6 @@ class Journal:
     def add_cover_image(self, image: Image):
         self.cover_image = image
 
-    def upload_original_source(self, s3_handler):
-        # Upload the HTML itself
-        s3_handler.upload_to_originals(self.journal_id, 'index.html', self.original_html)
-
-        # Upload the cover image if one exists
-        if self.cover_image: s3_handler.upload_image_to_originals(self.journal_id, self.cover_image)
-
-    def upload_resources(self, s3_handler):
-        # Upload the cover image if one exists
-        if self.cover_image: s3_handler.upload_image_resource(self.cover_image)
-
     def save_original_source(self, local_handler):
         # Save the HTML itself
         local_handler.save_html_original('index.html', self.postprocessed_html if self.postprocessed_html else self.original_html)

@@ -9,8 +9,8 @@ class PlainSession(BaseSession):
 
     def make_request(self, url):
         super().make_request(url)
-        return self.session.get(url, headers=self.HEADERS)
+        return self.session.get(url, headers=self.headers)
 
     def make_stream_request(self, url):
         super().make_stream_request(url)
-        return self.session.get(url, headers=self.HEADERS, stream=True)
+        return self.session.get(url, headers=self.headers, stream=True)
