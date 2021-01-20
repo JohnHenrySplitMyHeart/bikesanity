@@ -10,6 +10,12 @@ All the authored content in journals will be retrieved, including all pages, tex
 
 For technical users, it also populates an object model of all cycle journals. You can write your own Python programs, and linking to this library get hold of `Journal` objects containing sensibly structured content for you to work on as you wish.
 
+### Can I see a sample of an extracted journal?
+
+Sure! The `samples/html` folder contains a sample of the converted journal HTML format, generated using placeholder data. This shows off the responsive layout, cleaner design, and fully working map embedding. You can browse that sample live at [https://raw.githack.com/JohnHenrySplitMyHeart/bikesanity/master/samples/html/index.html](https://raw.githack.com/JohnHenrySplitMyHeart/bikesanity/master/samples/html/index.html).
+
+All images used in the sample are in the public domain and freely licensed from [pexels](https://www.pexels.com/).
+
 ### How can I use this tool?
  
 This is a command line tool, and source code written in Python 3.6, to perform journal extraction.
