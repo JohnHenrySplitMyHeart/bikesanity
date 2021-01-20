@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/JohnHenrySplitMyHeart/bikesanity",
-    download_url = 'https://github.com/JohnHenrySplitMyHeart/bikesanity/archive/v_100.tar.gz',
+    download_url = 'https://github.com/JohnHenrySplitMyHeart/bikesanity/archive/v_1_0_0.tar.gz',
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
