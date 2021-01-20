@@ -3,8 +3,8 @@ import os
 
 import bikesanity.io_utils.log_handler as log_handler
 from bikesanity.entities.journal import Journal
-from io_utils.local_journal import LocalJournalHandler
-from output_transformers.templated_html_output import TemplatedHtmlOutput
+from bikesanity.io_utils.local_journal import LocalJournalHandler
+from bikesanity.output_transformers.templated_html_output import TemplatedHtmlOutput
 
 
 class PublicationFormats(Enum):
@@ -17,6 +17,7 @@ class PublishJournal:
     TEMPLATES_DIRECTORY = '../templates/'
 
     def __init__(self, input_location, output_location, journal_id):
+        self.journal_id = journal_id
 
         self.input_location = os.path.join(input_location, self.PROCESSED_DIRECTORY)
         self.output_location = os.path.join(output_location, self.PROCESSED_DIRECTORY)
@@ -31,7 +32,7 @@ class PublishJournal:
         # Load the journal by unpickling from the processed form
         journal = self.input_handler.load_serialized_journal()
         if not journal:
-            log_handler.log.error('Failure to load any journal with ID {0} - have you processed it?'.format(journal_id))
+            log_handler.log.error('Failure to load any journal with ID {0} - have you processed it?'.format(self.journal_id))
             return
 
         # Switch based on journal format required

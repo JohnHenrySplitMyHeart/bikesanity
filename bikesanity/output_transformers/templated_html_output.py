@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from bikesanity.entities.content_blocks import Image, Map, TextBlock
 from bikesanity.entities.journal import Journal
 from bikesanity.entities.page import Page
-from io_utils.resources import get_resource_string
+from bikesanity.io_utils.resources import get_resource_string
 
 
 class TemplatedHtmlOutput:
