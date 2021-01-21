@@ -411,6 +411,13 @@ footer.major {
   top: 0;
   width: 100%;
   z-index: 10000;
+  height: 50px;
+}
+
+#header-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 #header h1 {
@@ -427,7 +434,7 @@ footer.major {
   position: absolute;
   right: 1.5em;
   text-transform: uppercase;
-  top: 0.75em;
+  top: 0.5em;
 }
 
 #header nav ul {

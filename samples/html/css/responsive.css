@@ -163,7 +163,7 @@
 
   header.special {
     margin-bottom: 4em;
-    padding-top: 5em;
+    padding-top: 3em;
   }
 
   header.special:before, header.special:after {
@@ -222,7 +222,7 @@
 
   /* Header */
 
-  #header {
+  #logo {
     display: none;
   }
 
