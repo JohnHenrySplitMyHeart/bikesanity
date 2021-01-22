@@ -12,7 +12,7 @@ For technical users, it also populates an object model of all cycle journals. Yo
 
 ### Can I see a sample of an extracted journal?
 
-Sure! The `samples/html` folder contains a sample of the converted journal HTML format, generated using placeholder data. This shows off the responsive layout, cleaner design, and fully working map embedding. You can browse that sample live at [https://raw.githack.com/JohnHenrySplitMyHeart/bikesanity/master/samples/html/index.html](https://raw.githack.com/JohnHenrySplitMyHeart/bikesanity/master/samples/html/index.html).
+Sure! The `samples/html` folder contains a sample of the converted journal HTML format, generated using placeholder data. This shows off the responsive layout, cleaner design, and fully working map embedding. You can browse that sample live at [https://www.bikejournalbackup.com/html/index.html](https://www.bikejournalbackup.com/html/index.html).
 
 All images used in the sample are in the public domain and freely licensed from [pexels](https://www.pexels.com/).
 

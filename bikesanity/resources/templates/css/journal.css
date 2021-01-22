@@ -7,7 +7,6 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-
 html, body, div, span, applet, object,
 iframe, h1, h2, h3, h4, h5, h6, p, blockquote,
 pre, a, abbr, acronym, address, big, cite,
@@ -352,7 +351,10 @@ footer.major {
 .wrapper.style4 {
   background: #fff;
   color: inherit;
-  padding: 4em;
+  padding-top: 2em;
+  padding-bottom: 2em;
+  padding-left: 4em;
+  padding-right: 4em;
 }
 
 /* Header */
@@ -409,6 +411,13 @@ footer.major {
   top: 0;
   width: 100%;
   z-index: 10000;
+  height: 50px;
+}
+
+#header-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 #header h1 {
@@ -425,7 +434,7 @@ footer.major {
   position: absolute;
   right: 1.5em;
   text-transform: uppercase;
-  top: 0.75em;
+  top: 0.5em;
 }
 
 #header nav ul {
@@ -556,6 +565,7 @@ body.index #main {
 
 /* Pictures */
 
+
 .pic_container {
   margin: 0 auto;
   width: 70%;
@@ -570,6 +580,8 @@ body.index #main {
 
 .pic_container img {
   flex: none;
+  max-width:100%;
+  max-height:100%;
 }
 
 .pic_container a {
