@@ -12,8 +12,13 @@ class TemplatedHtmlOutput:
 
     TEMPLATES_DIRECTORY = 'templates'
 
-    def __init__(self, local_handler):
+    def __init__(self, local_handler, progress_callback=None):
         self.local_handler = local_handler
+        self.progress_callback = progress_callback
+
+    def progress_update(self, percent):
+        if self.progress_callback:
+            self.progress_callback(progress=percent)
 
     def open_index_template(self):
         template_html = get_resource_string([self.TEMPLATES_DIRECTORY, 'index.html'])
@@ -64,13 +69,17 @@ class TemplatedHtmlOutput:
         if journal.cover_image:
             self.output_picture(soup, index_body, journal.cover_image, fullsize_only=True, prepend=True)
 
+        # Update progress
+        self.progress_update(percent=10)
+
         toc_div = soup.find(id='toc_container')
 
         # Iterate over the ToC and process every page
         page_idx = 1
         ul_tag = None
 
-        last_toc = [toc for toc in journal.toc if toc.page][-1]
+        toc_pages = [toc for toc in journal.toc if toc.page]
+        last_toc = toc_pages[-1]
 
         for toc_item in journal.toc:
 
@@ -96,6 +105,9 @@ class TemplatedHtmlOutput:
 
                 self.output_subtitle(soup, toc_div, toc_item.title)
 
+            # Calculate and update progress
+            self.progress_update(((page_idx / len(toc_pages)) * 80) + 10)
+
         if ul_tag:
             toc_div.append(ul_tag)
 
@@ -110,6 +122,9 @@ class TemplatedHtmlOutput:
         self.local_handler.copy_resource_stream(['templates', 'css', 'images', 'dark-tr.svg'], ['css', 'images', 'dark-tr.svg'])
         self.local_handler.copy_resource_stream(['templates', 'css', 'images', 'dark-br.svg'], ['css', 'images', 'dark-br.svg'])
         self.local_handler.copy_resource_stream(['templates', 'css', 'images', 'dark-bl.svg'], ['css', 'images', 'dark-bl.svg'])
+
+        # Update progress
+        self.progress_update(percent=100)
 
 
     def add_nav_link(self, soup, nav_ul, idx, text):

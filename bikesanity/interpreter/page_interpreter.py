@@ -11,8 +11,13 @@ from .interpreter_base import InterpreterBase
 
 
 class PageInterpreter(InterpreterBase):
-    def __init__(self, retriever: BaseRetriever):
+    def __init__(self, retriever: BaseRetriever, progress_callback=None):
         self.retriever = retriever
+        self.progress_callback = progress_callback
+
+    def update_progress(self):
+        if self.progress_callback: self.progress_callback()
+
 
     def get_title(self, title):
         title_elem = title.find(name='h1')
@@ -146,6 +151,7 @@ class PageInterpreter(InterpreterBase):
                 if image_block: page.add_content(image_block)
 
         self.remove_everything_before(elem, including=True)
+        self.update_progress()
         return True
 
 
@@ -212,18 +218,24 @@ class PageInterpreter(InterpreterBase):
 
     def retrieve_page(self, journal_id, original_id, url):
         log_handler.log.info('Retrieving page {0} for journal {1}'.format(original_id, journal_id), extra={'journal_id': journal_id})
+        self.update_progress()
+
         # Download the page HTML
         page_html = self.retriever.retrieve_page(url, original_id, error_message="Error code in retrieving journal page html: {0}")
+        self.update_progress()
+
         page = Page(journal_id, original_id, page_html)
 
         # Download any additional other pages
         for url, part_id in self.find_additional_pages(page_html):
             log_handler.log.info('Additional page for {0} detected: {1}'.format(original_id, url), extra={'journal_id': journal_id})
+            self.update_progress()
 
             # Lack of a parsed part number means this has already been postprocessed (and then just use the whole path)
             additional_filename = '{0}_{1}'.format(original_id, part_id) if part_id else url.replace('.html', '')
 
             additional_html = self.retriever.retrieve_page(url, additional_filename, error_message="Error code in retrieving additional page html: {0}")
             page.add_additional_html(additional_html)
+            self.update_progress()
 
         return page

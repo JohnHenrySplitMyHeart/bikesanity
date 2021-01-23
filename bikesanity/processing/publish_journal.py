@@ -28,7 +28,7 @@ class PublishJournal:
     def get_publication_location(self):
         return self.output_handler.get_html_path('index.html')
 
-    def publish_journal_id(self, format: PublicationFormats):
+    def publish_journal_id(self, format: PublicationFormats, progress_callback=None):
         # Load the journal by unpickling from the processed form
         journal = self.input_handler.load_serialized_journal()
         if not journal:
@@ -37,9 +37,9 @@ class PublishJournal:
 
         # Switch based on journal format required
         if format == PublicationFormats.TEMPLATED_HTML:
-            self.publish_journal_templated_html(journal)
+            self.publish_journal_templated_html(journal, progress_callback)
 
 
-    def publish_journal_templated_html(self, journal: Journal):
-        templated_output = TemplatedHtmlOutput(self.output_handler)
+    def publish_journal_templated_html(self, journal: Journal, progress_callback=None):
+        templated_output = TemplatedHtmlOutput(self.output_handler, progress_callback)
         templated_output.output_journal(journal)
