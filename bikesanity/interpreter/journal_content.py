@@ -1,4 +1,5 @@
 from itertools import takewhile
+import unicodedata
 
 from bs4 import BeautifulSoup, NavigableString
 
@@ -40,7 +41,9 @@ class JournalContent(InterpreterBase):
         if locales_elem:
             for sibling in locales_elem.find_next_siblings():
                 if sibling.name != 'a': break
-                locales.append(sibling.get_text())
+                locale_name = sibling.get_text()
+                locale_name = unicodedata.normalize("NFKD", locale_name)
+                locales.append(locale_name)
         return locales
 
     def get_cover_pic(self, doc):
