@@ -63,7 +63,7 @@
   /* Footer */
 
   #footer {
-    padding: 4em;
+    padding: 1em;
   }
 
 }
@@ -122,9 +122,14 @@
     padding: 2.5em;
   }
 
+  span.collapses {
+    display: none !important;
+  }
+
   /* Banner */
 
   #banner {
+    background-image: url("images/light-bl.svg"), url("images/light-br.svg"), url("images/overlay.png"), url("../img/banner.jpeg");
     background-size: 15em, 15em, auto, cover;
   }
 
@@ -226,9 +231,22 @@
     display: none;
   }
 
+  .logo {
+    display: none;
+  }
+
+  .collapses {
+    display: none !important;
+  }
+
+  li .collapses  {
+    display: none !important;
+  }
+
   /* Banner */
 
   #banner {
+    background-image: url("images/light-bl.svg"), url("images/light-br.svg"), url("images/overlay.png"), url("../img/banner.jpeg");
     margin: 0;
   }
 
@@ -271,7 +289,7 @@
   /* Footer */
 
   #footer {
-    padding: 4em 1.5em;
+    padding: 1em 1.5em;
   }
 
   /* Nav */
@@ -394,6 +412,7 @@
     line-height: 3em;
     opacity: 0.75;
     text-decoration: none;
+    padding-left: 1em;
   }
 
   #navPanel .link.depth-0 {
@@ -515,25 +534,6 @@
     font-size: 1em;
   }
 
-  /* Button */
-
-  input[type="button"],
-  input[type="submit"],
-  input[type="reset"],
-  button,
-  .button {
-    max-width: 20em;
-    width: 100%;
-  }
-
-  input[type="button"].fit,
-  input[type="submit"].fit,
-  input[type="reset"].fit,
-  button.fit,
-  .button.fit {
-    width: auto;
-  }
-
   /* Icons */
 
   ul.icons li {
@@ -580,6 +580,7 @@
   /* Banner */
 
   #banner {
+    background-image: url("images/light-bl.svg"), url("images/light-br.svg"), url("images/overlay.png"), url("../img/banner.jpeg");
     background-size: 10em, 10em, auto, cover;
     padding: 6em 0;
   }
@@ -627,7 +628,7 @@
   /* Footer */
 
   #footer {
-    padding: 3em 1.5em;
+    padding: 1em 1.5em;
   }
 
   #footer .copyright li {
