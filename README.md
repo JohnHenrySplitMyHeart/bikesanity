@@ -22,7 +22,7 @@ This is a command line tool, and source code written in Python 3.6, to perform j
 
 If you are comfortable using command line tools and have Python on your system, you can install this module and use it directly.
 
-Otherwise you may be better off using the user-friendly graphical tool (coming soon). That is built on top of this library and so can perform the same actions, but will be easier for non-technical users.
+Otherwise you may be better off using the user-friendly graphical tool [**available here**](https://github.com/JohnHenrySplitMyHeart/bikesanity-ui). That is built on top of this library and so can perform the same actions, but will be easier for non-technical users.
 
 ### Who can use it?
 
