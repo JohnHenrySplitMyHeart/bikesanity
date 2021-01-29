@@ -39,7 +39,7 @@ class FileHandler:
     def get_file_content(self, filename):
         if not self.file_exists(filename):
             raise RuntimeError('File did not exist: {0}'.format(filename))
-        with open(filename, 'r') as handle:
+        with open(filename, 'r', encoding="utf8") as handle:
             return handle.read()
 
     def get_binary_content(self, filename):
