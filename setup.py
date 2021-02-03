@@ -26,7 +26,8 @@ setuptools.setup(
         'lxml>=4.5.2',
         'html5lib>=1.1',
         'gpxpy>=1.4.2',
-        'Click>=7.0'
+        'Click>=7.0',
+        'jsonpickle>=1.5.1'
     ],
     entry_points={
         'console_scripts': ['bikesanity-run=bikesanity.run:run'],

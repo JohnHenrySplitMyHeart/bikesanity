@@ -4,11 +4,14 @@ import os
 import bikesanity.io_utils.log_handler as log_handler
 from bikesanity.entities.journal import Journal
 from bikesanity.io_utils.local_journal import LocalJournalHandler
+
 from bikesanity.output_transformers.templated_html_output import TemplatedHtmlOutput
+from bikesanity.output_transformers.json_output import JsonOutput
 
 
 class PublicationFormats(Enum):
     TEMPLATED_HTML = auto()
+    JSON_MODEL = auto()
 
 
 class PublishJournal:
@@ -38,8 +41,14 @@ class PublishJournal:
         # Switch based on journal format required
         if format == PublicationFormats.TEMPLATED_HTML:
             self.publish_journal_templated_html(journal, progress_callback)
+        elif format == PublicationFormats.JSON_MODEL:
+            self.export_json_model(journal, progress_callback)
 
 
     def publish_journal_templated_html(self, journal: Journal, progress_callback=None):
         templated_output = TemplatedHtmlOutput(self.output_handler, progress_callback)
         templated_output.output_journal(journal)
+
+    def export_json_model(self, journal: Journal, progress_callback=None):
+        json_output = JsonOutput(self.output_handler, progress_callback)
+        json_output.output_journal(journal)
