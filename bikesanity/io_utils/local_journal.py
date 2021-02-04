@@ -114,6 +114,11 @@ class LocalJournalHandler(FileHandler):
         self.output_text_to_file(path, html)
         return filename
 
+    def save_generated_json(self, json):
+        path = self.get_path('journal.json')
+        self.output_text_to_file(path, json)
+
+
     def serialize_and_save_journal(self, journal):
         serialized = self.serializer.serialize_journal(journal)
         self.output_binary_to_file(os.path.join(

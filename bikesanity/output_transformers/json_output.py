@@ -3,8 +3,17 @@ import jsonpickle
 from bikesanity.entities.content_blocks import Image, Map, TextBlock
 from bikesanity.entities.journal import Journal
 from bikesanity.entities.page import Page
-from bikesanity.entities.json.journal import JsonJournal, JsonPage, JsonDistance, JsonSection
+from bikesanity.entities.json.journal import JsonJournal, JsonPage, JsonDistance, JsonSection, SectionType
 
+
+class EnumHandler(jsonpickle.handlers.BaseHandler):
+    def flatten(self, obj, data):  # data contains {}
+        if obj == SectionType.TEXT:
+            return 'text'
+        elif obj == SectionType.PIC:
+            return 'pic'
+
+jsonpickle.handlers.registry.register(SectionType, EnumHandler)
 
 
 class JsonOutput:
@@ -17,11 +26,18 @@ class JsonOutput:
         if self.progress_callback:
             self.progress_callback(progress=percent)
 
+    def miles_primary(self, ds):
+        return 'km)' in ds
+
     def miles_distance(self, ds):
-        return ds[:ds.find(' miles')] if ds and ' miles' in ds else None
+        if not ds or ' miles' not in ds:
+            return None
+        return ds[:ds.find(' miles')] if self.miles_primary(ds) else ds[ds.find('(')+1:ds.find(' miles')]
 
     def km_distance(self, ds):
-        return ds[ds.find('(')+1:ds.find(' km')] if ds and ' km' in ds else None
+        if not ds or ' km' not in ds:
+            return None
+        return ds[ds.find('(')+1:ds.find(' km')] if self.miles_primary(ds) else ds[:ds.find(' km')]
 
     def journal_distance(self, journal: Journal):
         ds = journal.distance_statement or ''
@@ -35,7 +51,7 @@ class JsonOutput:
         if 'from' and 'to' in ds:
             first_date = ds[ds.rfind('from')+5:ds.rfind('to')]
 
-        return self.miles_distance(ds), self.km_distance(ds), first_date, last_date
+        return self.miles_primary(ds), self.miles_distance(ds), self.km_distance(ds), first_date, last_date
 
     def output_journal(self, journal: Journal):
 
@@ -47,7 +63,8 @@ class JsonOutput:
 
         json_journal.add_author(journal.journal_author)
 
-        miles, km, first_date, last_date = self.journal_distance(journal)
+        miles_primary, miles, km, first_date, last_date = self.journal_distance(journal)
+        json_journal.primaryDistanceUomIsMiles = miles_primary
         json_journal.distanceInMiles = miles
         json_journal.distanceInKilometers = km
         json_journal.firstDate = first_date
@@ -81,9 +98,7 @@ class JsonOutput:
 
         # Serialize to JSON
         json = jsonpickle.encode(json_journal, unpicklable=False, indent=4)
-        x = 10
-
-        #self.local_handler.save_generated_html(soup, 'index')
+        self.local_handler.save_generated_json(json)
 
         # Update progress
         self.progress_update(percent=100)

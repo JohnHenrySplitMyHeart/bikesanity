@@ -92,9 +92,10 @@ def process_exported(journal_id, location, output_location):
 @click.option('--input-location', default=None, help="Custom download location of journal")
 @click.option('--output-location', default=None, help="Custom output for processed journals")
 @click.option('--html', is_flag=True, default=True, help="Export as HTML")
-@click.option('--pdf', is_flag=True, default=False, help="Export as HTML")
-@click.option('--epub', is_flag=True, default=False, help="Export as HTML")
-def publish(journal_id, input_location=None, output_location=None, html=True, pdf=False, epub=False):
+@click.option('--json', is_flag=True, default=False, help="Export as JSON")
+@click.option('--pdf', is_flag=True, default=False, help="Export as PDF")
+@click.option('--epub', is_flag=True, default=False, help="Export as EPUB")
+def publish(journal_id, input_location, output_location, html, json, pdf, epub):
     log.info('Outputting journal id {0} to formats: {1}'.format(journal_id, 'html'))
 
     input_path = input_location if input_location else base_path
@@ -102,7 +103,11 @@ def publish(journal_id, input_location=None, output_location=None, html=True, pd
 
     try:
         journal_publisher = PublishJournal(input_path, output_path, journal_id)
-        journal_publisher.publish_journal_id(PublicationFormats.TEMPLATED_HTML)
+
+        if html:
+            journal_publisher.publish_journal_id(PublicationFormats.TEMPLATED_HTML)
+        if json:
+            journal_publisher.publish_journal_id(PublicationFormats.JSON_MODEL)
 
         log.info('Completed publishing to HTML! Published journal available in {0}'.format(journal_publisher.get_publication_location()))
 
