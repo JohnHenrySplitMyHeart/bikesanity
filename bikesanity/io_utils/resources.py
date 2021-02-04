@@ -1,3 +1,4 @@
+import tempfile
 import pickle
 import bikesanity
 import pkg_resources
@@ -21,6 +22,14 @@ def get_resource_string(paths):
 def get_resource_stream(paths):
     resource_path = _resource_path(paths)
     return pkg_resources.resource_stream(resource_package, resource_path)
+
+def create_temp_from_resource(paths):
+    resource_path = _resource_path(paths)
+    with pkg_resources.resource_stream(resource_package, resource_path) as stream:
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_file.write(stream.read())
+        temp_file.close()
+        return temp_file.name
 
 
 def unserialize_resource_stream(paths):

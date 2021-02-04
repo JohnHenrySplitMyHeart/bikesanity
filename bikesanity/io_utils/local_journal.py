@@ -28,6 +28,9 @@ class LocalJournalHandler(FileHandler):
     def get_html_path(self, filename):
         return os.path.join(self.base_path, self.journal_id, 'html', filename)
 
+    def get_pdf_path(self, filename):
+        return os.path.join(self.base_path, self.journal_id, 'pdf', filename)
+
     def get_index(self):
         return self.get_file_content(
             os.path.join(self.base_path, self.journal_id, 'index.html')
@@ -117,6 +120,12 @@ class LocalJournalHandler(FileHandler):
     def save_generated_json(self, json):
         path = self.get_path('journal.json')
         self.output_text_to_file(path, json)
+
+    def save_generated_pdf(self, pdf, part=None):
+        pdf_filename = 'journal.pdf' if not part else 'journal_part_{0}.pdf'.format(part)
+        path = self.get_pdf_path(pdf_filename)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        pdf.output(path)
 
 
     def serialize_and_save_journal(self, journal):
