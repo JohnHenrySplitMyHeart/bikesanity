@@ -2,7 +2,7 @@
 
 ### What is this?
 
-In this repository is the complete code needed to download, extract, interpret, and export - in an attractive, completely new and _mobile friendly_ HTML format - bicycle touring journals available in the popular [crazyguyonabike.com](https://www.crazyguyonabike.com) (CGOAB) website.
+In this repository is the complete code needed to download, extract, interpret, and export - in an attractive, completely new and _mobile friendly_ HTML format - bicycle touring journals available in the popular [crazyguyonabike.com](https://www.crazyguyonabike.com) (CGOAB) website. You can also convert your journals to PDF format (**new!**) or to a JSON data structure for transfer to other cycle touring platforms.
 
 You can use it download and create backups of your journals, to interpret them into a form where the content is easier to extract, and to re-format them in various formats readable offline.
 
@@ -55,7 +55,7 @@ The three simple commands will download, interpret, and re-output a journal in n
 
     bikesanity-run download <http://www.crazyguyonabike.com/doc/JournalNameHere>
     bikesanity-run process <12345>
-    bikesanity-run publish <12345>
+    bikesanity-run publish <12345> --html
 
 Replace `<>` values with a link to the journal you want to download, and its ID (which will be shown to you upon download). The your re-formatted journal will be available in `CycleSanityJournals/processed/12345/html/index.html`!
 
@@ -67,7 +67,7 @@ The `bikesanity-run` script can perform four different operations:
 1. Download of a complete journal, as is, from crazyguyonabike.com
 2. Interpretation ("processing") of a _downloaded_ journal to extract  all the content into an understandable internal (object) model.
 3. Interpretation of an _exported_ journal (i.e. one formally exported using the tool provided by CGOAB) to extract all the content
-4. Publishing of a processed journal to create new, clean HTML content including all images, maps, and structure locally browseable.
+4. Publishing of a processed journal to create new, clean HTML content including all images, maps, and structure locally browseable. You can also publish to create a unified PDF of your journal, or a simplified JSON data structure for transfer to other platforms.
 
 By default all journals will be downloaded and processed into a folder created in your home directory (`/home/<usr>/CycleSanityJournals` on mac/linux, `c:\Users\<usr\CycleSanityJournals` on Windows). You can change this path using the options below.
 
@@ -98,11 +98,17 @@ Options:
 
 Following processing, a complete object model of the journal will be created and saved in as a serialized Python pickle as `journal.pickle` - for technical users, you may wish to load and inspect this. All resources (images and maps) will be copied to the new `processed/resources` location.
 
-#### Locally publishing to HTML
+#### Locally publishing to HTML, PDF and other formats
 
-Currently it possible to publish processed journals to attractive and clean HTML that can be fully-functionally browsed on the local machine, including dynamic maps. Publish any processed journal to HTML using the `publish` argument and providing the same _journal id_:
+Currently it possible to publish processed journals to HTML, PDF documents, or a JSON data structure. Publish any processed journal using the `publish` argument and providing the same _journal id_:
 
-    bikesanity-run publish <12345>
+    bikesanity-run publish <12345> --html --pdf --json
+
+Use any combination of the optional flags to generate HTML, PDF or JSON output:
+
+- `--html` will produce attractive and clean HTML that can be fully-functionally browsed on the local machine, including dynamic maps.
+- `--pdf` will generate a collected PDF document of the journal, including all images. Large journals may be split into several PDF parts
+- `--json` will generate a simple JSON data structure that may be used to migrate the journal to other platforms
 
 By default, HTML is output inside the processed directory, at `CycleSanityJournals/processed/<journal_id>/html` - open `index.html` to browse the journal index.
 
