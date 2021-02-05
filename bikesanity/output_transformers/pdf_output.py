@@ -115,6 +115,9 @@ class PdfOutput:
         log_handler.log.info('Writing PDF file (this can be CPU intensive and take a few minutes)')
         self.local_handler.save_generated_pdf(journal_pdf, part=part)
 
+        # Cleanup font files
+        journal_pdf.cleanup_tmp_files()
+
 
     def output_textblock(self, journal_pdf: JournalPdf, content: TextBlock):
         for para in content.content_text:

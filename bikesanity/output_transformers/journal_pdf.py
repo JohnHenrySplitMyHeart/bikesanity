@@ -1,5 +1,6 @@
 from fpdf import FPDF
 
+import os
 import shutil
 from bikesanity.io_utils.resources import create_temp_from_resource
 
@@ -33,6 +34,7 @@ class JournalPdf(FPDF):
 
         super().__init__(orientation='P', unit='mm', format='A4')
 
+        self.tmp_files = []
         self.load_font_resource('DejaVuSans.ttf', '')
         self.load_font_resource('DejaVuSans-Bold.ttf', 'B')
         self.load_font_resource('DejaVuSans-Oblique.ttf', 'I')
@@ -44,6 +46,8 @@ class JournalPdf(FPDF):
         temp_font_file = create_temp_from_resource(['fonts', font_name])
         # Add the font from this temporary file (only method FPDF supports)
         self.add_font(DEJAVU_FONT, weight, temp_font_file, uni=True)
+        # Remove the temp file once its loaded
+        self.tmp_files.append(temp_font_file)
 
 
     def update_page_title(self, name):
@@ -237,3 +241,12 @@ class JournalPdf(FPDF):
 
     def unset_clipping(self):
         self._out('Q')
+
+    def cleanup_tmp_files(self):
+        for tmp_file in self.tmp_files:
+            try:
+                os.remove(tmp_file)
+                os.remove(tmp_file + '.pkl')
+                os.remove(tmp_file + '.cw127.pkl')
+            except:
+                pass
