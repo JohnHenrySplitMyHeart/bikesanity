@@ -30,8 +30,10 @@ class PublishJournal:
         self.input_handler = LocalJournalHandler(self.input_location, journal_id)
         self.output_handler = LocalJournalHandler(self.output_location, journal_id)
 
+        self.publication_location = None
+
     def get_publication_location(self):
-        return self.output_handler.get_html_path('index.html')
+        return self.publication_location
 
     def publish_journal_id(self, format: PublicationFormats, progress_callback=None):
         # Load the journal by unpickling from the processed form
@@ -52,11 +54,14 @@ class PublishJournal:
     def publish_journal_templated_html(self, journal: Journal, progress_callback=None):
         templated_output = TemplatedHtmlOutput(self.output_handler, progress_callback)
         templated_output.output_journal(journal)
+        self.publication_location = self.output_handler.get_html_path('index.html')
 
     def export_json_model(self, journal: Journal, progress_callback=None):
         json_output = JsonOutput(self.output_handler, progress_callback)
         json_output.output_journal(journal)
+        self.publication_location = self.output_handler.get_path('journal.json')
 
     def publish_pdf(self, journal: Journal, progress_callback=None):
         pdf_output = PdfOutput(self.output_handler, progress_callback)
         pdf_output.output_journal(journal)
+        self.publication_location = self.output_handler.get_pdf_path('journal.pdf')

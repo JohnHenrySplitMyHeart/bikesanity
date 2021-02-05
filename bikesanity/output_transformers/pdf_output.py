@@ -1,3 +1,4 @@
+import bikesanity.io_utils.log_handler as log_handler
 from bikesanity.entities.content_blocks import Image, Map, TextBlock
 from bikesanity.entities.journal import Journal
 
@@ -36,20 +37,21 @@ class PdfOutput:
         full_pages = [content for content in journal.toc if content.page]
 
         if len(full_pages) <= self.MAX_PDF_SECTIONS:
+            log_handler.log.info('Writing to single PDF file')
             self.output_journal_part(journal, journal.toc)
         else:
             start_page = 0
             part = 1
 
+            log_handler.log.info('Splitting up into multiple PDF files')
             for chunk in self.chunks(journal.toc, self.MAX_PDF_SECTIONS):
+                log_handler.log.info('Creating PDF part {0}'.format(part))
                 self.output_journal_part(journal, chunk, part=part, from_page=start_page)
                 part += 1
                 start_page += self.MAX_PDF_SECTIONS
 
 
     def output_journal_part(self, journal: Journal, contents, part=None, from_page=None):
-        #self.optimize_images(contents)
-
         journal_pdf = JournalPdf(title=journal.journal_title, author=journal.journal_author, part=part)
 
         # Create a cover
@@ -73,7 +75,7 @@ class PdfOutput:
         for toc_item in contents:
 
             if toc_item.page:
-                print('Processing page {0}'.format(page_idx))
+                log_handler.log.info('Processing page {0} to PDF'.format(page_idx))
                 page_idx += 1
 
                 journal_pdf.update_page_title(toc_item.page.title)
@@ -109,6 +111,8 @@ class PdfOutput:
 
         # Reset to the last page
         journal_pdf.page = final_page
+
+        log_handler.log.info('Writing PDF file (this can be CPU intensive and take a few minutes)')
         self.local_handler.save_generated_pdf(journal_pdf, part=part)
 
 

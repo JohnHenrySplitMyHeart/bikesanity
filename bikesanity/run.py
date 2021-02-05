@@ -91,28 +91,42 @@ def process_exported(journal_id, location, output_location):
 @click.argument('journal_id')
 @click.option('--input-location', default=None, help="Custom download location of journal")
 @click.option('--output-location', default=None, help="Custom output for processed journals")
-@click.option('--html', is_flag=True, default=True, help="Export as HTML")
+@click.option('--html', is_flag=True, default=False, help="Export as HTML")
 @click.option('--json', is_flag=True, default=False, help="Export as JSON")
 @click.option('--pdf', is_flag=True, default=False, help="Export as PDF")
 @click.option('--epub', is_flag=True, default=False, help="Export as EPUB")
 def publish(journal_id, input_location, output_location, html, json, pdf, epub):
-    log.info('Outputting journal id {0} to formats: {1}'.format(journal_id, 'html'))
-
     input_path = input_location if input_location else base_path
     output_path = output_location if output_location else base_path
+
+    if not html and not json and not pdf and not epub: html = True
+
+    formats = []
+    if html: formats.append('html')
+    if json: formats.append('json')
+    if pdf: formats.append('pdf')
+
+    log.info('Outputting journal id {0} to formats: {1}'.format(journal_id, ', '.join(formats)))
 
     try:
         journal_publisher = PublishJournal(input_path, output_path, journal_id)
 
         if html:
             journal_publisher.publish_journal_id(PublicationFormats.TEMPLATED_HTML)
+            log.info('Completed publishing to HTML! Published journal available in {0}'.format(journal_publisher.get_publication_location()))
         if json:
             journal_publisher.publish_journal_id(PublicationFormats.JSON_MODEL)
-
-        log.info('Completed publishing to HTML! Published journal available in {0}'.format(journal_publisher.get_publication_location()))
+            log.info('Completed publishing to JSON! Published journal available in {0}'.format(journal_publisher.get_publication_location()))
+        if pdf:
+            journal_publisher.publish_journal_id(PublicationFormats.PDF)
+            log.info('Completed publishing to PDF! Published journal available in {0}'.format(journal_publisher.get_publication_location()))
 
     except Exception:
         log.exception('Critical error on publishing journal')
+
+@run.command()
+def version():
+    print('BikeSanity script v1.1.0')
 
 
 if __name__ == '__main__':

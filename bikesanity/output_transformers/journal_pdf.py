@@ -1,7 +1,7 @@
 from fpdf import FPDF
 
 import shutil
-from io_utils.resources import create_temp_from_resource
+from bikesanity.io_utils.resources import create_temp_from_resource
 
 
 DEJAVU_FONT = 'DejaVu'
