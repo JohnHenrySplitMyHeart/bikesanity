@@ -35,23 +35,29 @@ class PdfOutput:
 
         # Determine if it needs to be split into parts, and make the split
         full_pages = [content for content in journal.toc if content.page]
+        part_progress = 100 / (len(full_pages)/self.MAX_PDF_SECTIONS)
 
         if len(full_pages) <= self.MAX_PDF_SECTIONS:
             log_handler.log.info('Writing to single PDF file')
-            self.output_journal_part(journal, journal.toc)
+            self.output_journal_part(journal, journal.toc, part_progress=100)
         else:
+            progress = 0
             start_page = 0
             part = 1
 
             log_handler.log.info('Splitting up into multiple PDF files')
             for chunk in self.chunks(journal.toc, self.MAX_PDF_SECTIONS):
                 log_handler.log.info('Creating PDF part {0}'.format(part))
-                self.output_journal_part(journal, chunk, part=part, from_page=start_page)
+                self.output_journal_part(journal, chunk, part=part, from_page=start_page, start_progress=progress, part_progress=part_progress)
                 part += 1
                 start_page += self.MAX_PDF_SECTIONS
+                progress += part_progress
+
+        # Update progress
+        self.progress_update(percent=100)
 
 
-    def output_journal_part(self, journal: Journal, contents, part=None, from_page=None):
+    def output_journal_part(self, journal: Journal, contents, part=None, from_page=None, start_progress=0, part_progress=100):
         journal_pdf = JournalPdf(title=journal.journal_title, author=journal.journal_author, part=part)
 
         # Create a cover
@@ -106,6 +112,9 @@ class PdfOutput:
                 pdf_toc.append(PdfTocEntry(toc_item.title, journal_pdf.page_no()-2, True))
                 new_page_needed = False
 
+            # Calculate and update progress
+            self.progress_update(((page_idx / len(contents)) * part_progress) + start_progress)
+
         # Go back and populate the table of contents
         final_page = journal_pdf.page_no()
         journal_pdf.page = 2
@@ -118,6 +127,8 @@ class PdfOutput:
 
         log_handler.log.info('Writing PDF file (this can be CPU intensive and take a few minutes)')
         self.local_handler.save_generated_pdf(journal_pdf, part=part)
+
+        self.progress_update(start_progress + part_progress)
 
         # Cleanup font files
         journal_pdf.cleanup_tmp_files()
