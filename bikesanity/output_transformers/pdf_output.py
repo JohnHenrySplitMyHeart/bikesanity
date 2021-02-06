@@ -71,6 +71,7 @@ class PdfOutput:
 
         # Process pages
         page_idx = from_page or 0
+        new_page_needed = True
 
         for toc_item in contents:
 
@@ -80,7 +81,7 @@ class PdfOutput:
 
                 journal_pdf.update_page_title(toc_item.page.title)
 
-                journal_pdf.add_page()
+                if new_page_needed: journal_pdf.add_page()
                 pdf_toc.append(PdfTocEntry(toc_item.page.title, journal_pdf.page_no()-2, False))
 
                 journal_pdf.chapter_title(
@@ -96,16 +97,19 @@ class PdfOutput:
                     elif isinstance(content, Map):
                         self.output_map(journal_pdf, content)
 
+                new_page_needed = True
+
             elif toc_item.title:
+                journal_pdf.update_page_title(toc_item.title)
+                journal_pdf.add_page()
                 journal_pdf.section_title(toc_item.title)
                 pdf_toc.append(PdfTocEntry(toc_item.title, journal_pdf.page_no()-2, True))
+                new_page_needed = False
 
         # Go back and populate the table of contents
         final_page = journal_pdf.page_no()
         journal_pdf.page = 2
         journal_pdf.set_y(30)
-
-        journal_pdf.section_title('Table of Contents')
 
         journal_pdf.add_toc(pdf_toc)
 

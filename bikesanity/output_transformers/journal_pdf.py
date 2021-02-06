@@ -118,7 +118,8 @@ class JournalPdf(FPDF):
         # Line break
         self.ln(6)
         self.set_font(DEJAVU_FONT, '', 16)
-        self.multi_cell(0, 20, subtitle, 0, 'C', 0)
+        self.multi_cell(0, 10, subtitle, 0, 'C', 0)
+        self.ln(4)
         self.set_font(DEJAVU_FONT, 'I', 10)
         self.multi_cell(0, 5, distance_statement, 0, 'C', 0)
         self.ln(5)
@@ -128,10 +129,12 @@ class JournalPdf(FPDF):
 
     def section_title(self, title):
         self.set_font(DEJAVU_FONT, 'B', 18)
-        self.cell(0, 5, title, 0, 0, 'C', 0)
-        self.ln(2)
+        self.multi_cell(0, 10, title, 0, 'C', 0)
+        self.ln(20)
 
     def add_toc(self, toc_items):
+        self.set_font(DEJAVU_FONT, 'B', 18)
+        self.cell(0, 5, 'Table of Contents', 0, 0, 'C', 0)
 
         self.ln(15)
         self.set_font(DEJAVU_FONT, 'I', 9)
