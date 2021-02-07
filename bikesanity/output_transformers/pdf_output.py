@@ -113,7 +113,7 @@ class PdfOutput:
                 new_page_needed = False
 
             # Calculate and update progress
-            self.progress_update(((page_idx / len(contents)) * part_progress) + start_progress)
+            self.progress_update(((page_idx / len(contents)) * (part_progress/2)) + start_progress)
 
         # Go back and populate the table of contents
         final_page = journal_pdf.page_no()
@@ -126,6 +126,7 @@ class PdfOutput:
         journal_pdf.page = final_page
 
         log_handler.log.info('Writing PDF file (this can be CPU intensive and take a few minutes)')
+        self.progress_update(start_progress + (part_progress/1.5))
         self.local_handler.save_generated_pdf(journal_pdf, part=part)
 
         self.progress_update(start_progress + part_progress)
