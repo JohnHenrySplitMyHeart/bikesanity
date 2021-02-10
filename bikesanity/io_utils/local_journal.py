@@ -28,6 +28,9 @@ class LocalJournalHandler(FileHandler):
     def get_html_path(self, filename):
         return os.path.join(self.base_path, self.journal_id, 'html', filename)
 
+    def get_map_js_path(self, filename):
+        return os.path.join(self.base_path, self.journal_id, 'html', 'maps', filename)
+
     def get_pdf_path(self, filename):
         return os.path.join(self.base_path, self.journal_id, 'pdf', filename)
 
@@ -116,6 +119,10 @@ class LocalJournalHandler(FileHandler):
         path = self.get_html_path(filename)
         self.output_text_to_file(path, html)
         return filename
+
+    def save_map_js(self, map_id, map_js):
+        path = self.get_map_js_path('{0}.js'.format(map_id))
+        self.output_text_to_file(path, map_js)
 
     def save_generated_json(self, json):
         path = self.get_path('journal.json')

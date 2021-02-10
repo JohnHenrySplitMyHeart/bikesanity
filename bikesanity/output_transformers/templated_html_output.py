@@ -115,6 +115,7 @@ class TemplatedHtmlOutput:
         self.local_handler.save_generated_html(soup, 'index')
 
         # Copy the resources to the output as well
+        self.local_handler.copy_resource_stream(['templates', 'js', 'maps.js'], ['js', 'maps.js'])
         self.local_handler.copy_resource_stream(['templates', 'css', 'journal.css'], ['css', 'journal.css'])
         self.local_handler.copy_resource_stream(['templates', 'css', 'responsive.css'], ['css', 'responsive.css'])
         self.local_handler.copy_resource_stream(['templates', 'css', 'fontawesome-all.min.css'], ['css', 'fontawesome-all.min.css'])
@@ -226,32 +227,24 @@ class TemplatedHtmlOutput:
         page_div.append(p_tag)
 
 
-    MAP_SCRIPT = """
-        <!--
-        var mapGpx = '{1}';
+    MAP_GPX_SCRIPT = "<!--\nvar {0} = '{1}';\n-->"
 
-        var map = L.map('{0}');
-
-        L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
-          attribution: 'Map data &copy; <a href="http://www.osm.org">OpenStreetMap</a>'
-        }}).addTo(map);
-
-        new L.GPX(mapGpx, {{
-          async: true,
-          marker_options: {{
-            startIconUrl: null,
-            endIconUrl: null,
-            shadowUrl: null
-          }}
-        }})
-          .on('loaded', function(e) {{
-            map.fitBounds(e.target.getBounds());
-          }}).addTo(map);
-    """
+    MAP_SCRIPT = "\naddMap('{0}', {1});\n"
 
     def sanitize_gpx(self, gpx):
         gpx = gpx.replace('\n', '')
         return re.sub(r'\s{2,}', ' ', gpx)
+
+    def create_map_js(self, map: Map, map_id):
+        # Add the JavaScript for the map
+        map_gpx = self.local_handler.load_map_gpx(map)
+        map_gpx = self.sanitize_gpx(map_gpx)
+
+        map_gpx_var = '{0}_gpx'.format(map_id).replace('-', '_')
+        map_js = self.MAP_GPX_SCRIPT.format(map_gpx_var, map_gpx)
+        self.local_handler.save_map_js(map_id, map_js)
+        return map_gpx_var
+
 
     def output_map(self, soup, page_div, map: Map):
         map_container_div_tag = soup.new_tag('div', attrs={
@@ -281,15 +274,19 @@ class TemplatedHtmlOutput:
             caption_tag.append(soup.new_string(map.caption))
             map_container_div_tag.append(caption_tag)
 
-        # Add the JavaScript for the map
-        map_gpx = self.local_handler.load_map_gpx(map)
-        map_gpx = self.sanitize_gpx(map_gpx)
+
+        # Create the map wrapped as a JS file, to keep the HTML clean
+        map_gpx_var = self.create_map_js(map, map_id)
+        map_js_tag = soup.new_tag('script', attrs={
+            'src': 'maps/{0}.js'.format(map_id)
+        })
+        map_container_div_tag.append(map_js_tag)
 
         script_tag = soup.new_tag('script', attrs={
             'language': 'JavaScript',
             'type': 'text/javascript'
         })
-        script = self.MAP_SCRIPT.format(map_id, map_gpx)
+        script = self.MAP_SCRIPT.format(map_id, map_gpx_var)
         script_tag.append(soup.new_string(script))
         map_container_div_tag.append(script_tag)
 
