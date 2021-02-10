@@ -35,8 +35,16 @@ class JournalContent(InterpreterBase):
         if subtitle_elem and isinstance(subtitle_elem.next_sibling, NavigableString):
             return subtitle_elem.next_sibling.replace('\n', '').replace('\t', '').strip()
 
+    def get_author_statement(self, doc):
+        title = doc.title.text
+        if 'by ' in title:
+            return title[title.rfind('by ')+3:]
+        else:
+            author_elem = doc.find('a', {"href" : lambda l: l and '&user' in l})
+            return author_elem.get_text() if author_elem else None
+
     def get_locales(self, doc):
-        locales_elem = doc.find('b', string="Locales:")
+        locales_elem = doc.find('b', string="Locales:") or doc.find('b', string="Locale:")
         locales = []
         if locales_elem:
             for sibling in locales_elem.find_next_siblings():
@@ -107,17 +115,7 @@ class JournalContent(InterpreterBase):
         journal.distance_statement = self.get_distance_statement(doc)
 
         # Author user
-        author_elem = doc.find('a', {"href" : lambda l: l and '&user' in l})
-        journal.journal_author = author_elem.get_text() if author_elem else None
-
-        # Fix for exported journals
-        if not author_elem:
-            title = doc.find('title')
-            if title and 'by' in title.get_text():
-                title_text = title.get_text()
-                author = title_text[title_text.rfind('by')+3:]
-                journal.journal_author = author
-
+        journal.journal_author = self.get_author_statement(doc)
 
         # Locales
         journal.locales = self.get_locales(doc)

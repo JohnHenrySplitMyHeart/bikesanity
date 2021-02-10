@@ -166,15 +166,24 @@ class TemplatedHtmlOutput:
         # Add title and distance statement
         if page.date_statement:
             h4_tag = soup.new_tag('h4')
-            h4_tag.append(soup.new_string('Date: {0}'.format(page.date_statement)))
+            strong_tag = soup.new_tag('strong')
+            strong_tag.append(soup.new_string('Date: '))
+            h4_tag.append(strong_tag)
+            h4_tag.append(soup.new_string(page.date_statement))
             page_div.append(h4_tag)
         if page.page_distance:
             h4_tag = soup.new_tag('h4')
-            h4_tag.append(soup.new_string('Distance: {0}'.format(page.page_distance)))
+            strong_tag = soup.new_tag('strong')
+            strong_tag.append(soup.new_string('Distance: '))
+            h4_tag.append(strong_tag)
+            h4_tag.append(soup.new_string(page.page_distance))
             page_div.append(h4_tag)
         if page.total_distance:
             h4_tag = soup.new_tag('h4')
-            h4_tag.append(soup.new_string('Total distance: {0}'.format(page.total_distance)))
+            strong_tag = soup.new_tag('strong')
+            strong_tag.append(soup.new_string('Total distance: '))
+            h4_tag.append(strong_tag)
+            h4_tag.append(soup.new_string(page.total_distance))
             page_div.append(h4_tag)
 
         for content in page.contents:
@@ -190,13 +199,17 @@ class TemplatedHtmlOutput:
         return page_filename
 
     def output_para(self, soup, page_div, para):
+        p_tag = soup.new_tag('p')
+
         # Split every paragraph by explicit newlines
+        first = True
         for p in para.split('\n'):
+            # Write out a <br> not the first line
+            if not first: p_tag.append(soup.new_tag('br'))
+
             # Don't write out the previous page section dividers, as they're no longer needed
             if p.startswith('>>>') or p.startswith('<<<'):
                 continue
-
-            p_tag = soup.new_tag('p')
 
             # Links will be separated in their own paragraphs. Convert them into proper links
             if p.startswith('http://') or p.startswith('https://') and ' ' not in p:
@@ -207,7 +220,10 @@ class TemplatedHtmlOutput:
                 p_tag.append(a_tag)
             else:
                 p_tag.append(soup.new_string(p))
-            page_div.append(p_tag)
+
+            first = False
+
+        page_div.append(p_tag)
 
 
     MAP_SCRIPT = """

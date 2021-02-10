@@ -5,14 +5,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="bikesanity",
-    version="1.1.2",
+    version="1.1.3",
     author="John Henry",
     author_email="john.henry.split.my.heart@protonmail.com",
     description="BikeSanity cycle touring journal extractor and formatter",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/JohnHenrySplitMyHeart/bikesanity",
-    download_url = 'https://github.com/JohnHenrySplitMyHeart/bikesanity/archive/v_1.1.2.tar.gz',
+    download_url = 'https://github.com/JohnHenrySplitMyHeart/bikesanity/archive/v_1.1.3.tar.gz',
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -28,7 +28,8 @@ setuptools.setup(
         'gpxpy>=1.4.2',
         'Click>=7.0',
         'jsonpickle>=1.5.1',
-        'fpdf>=1.7.2'
+        'fpdf>=1.7.2',
+        'prettierfier>=1.0.3'
     ],
     entry_points={
         'console_scripts': ['bikesanity-run=bikesanity.run:run'],

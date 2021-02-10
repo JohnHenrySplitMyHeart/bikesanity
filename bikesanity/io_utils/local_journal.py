@@ -1,6 +1,6 @@
 import io
 import os
-
+import prettierfier
 
 from bikesanity.entities.content_blocks import Image, Map
 from .resources import get_resource_stream
@@ -111,7 +111,7 @@ class LocalJournalHandler(FileHandler):
             ), content)
 
     def save_generated_html(self, soup, filename):
-        html = str(soup)
+        html = prettierfier.prettify_html(soup.prettify())
         filename = '{0}.html'.format(filename)
         path = self.get_html_path(filename)
         self.output_text_to_file(path, html)

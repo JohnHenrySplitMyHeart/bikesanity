@@ -6,3 +6,4 @@ gpxpy>=1.4.2
 Click>=7.0
 jsonpickle>=1.5.1
 fpdf>=1.7.2
+prettierfier>=1.0.3
