@@ -90,9 +90,14 @@ class PageInterpreter(InterpreterBase):
         pic_small = self.retriever.retrieve_image_small(img_path)
         pic_fullsize = self.retriever.retrieve_image_large(img_path_fullsize)
 
+        # Replace broken P tags - NG is an amateur
+        for p in pic_elem.find_all('p'):
+            p.replace_with('\n' + p.text)
+
         # Get caption
         caption_elem = pic_elem.find(name='b')
-        caption = caption_elem.text if caption_elem else ''
+        caption = caption_elem.parent.text if caption_elem else ''
+        caption = caption.strip()
 
         return Image(img_path, img_path_fullsize, caption, pic_small, pic_fullsize)
 
