@@ -35,7 +35,7 @@ class PublishJournal:
     def get_publication_location(self):
         return self.publication_location
 
-    def publish_journal_id(self, format: PublicationFormats, progress_callback=None):
+    def publish_journal_id(self, format: PublicationFormats, reduced=False, progress_callback=None):
         # Load the journal by unpickling from the processed form
         journal = self.input_handler.load_serialized_journal()
         if not journal:
@@ -48,7 +48,7 @@ class PublishJournal:
         elif format == PublicationFormats.JSON_MODEL:
             self.export_json_model(journal, progress_callback)
         elif format == PublicationFormats.PDF:
-            self.publish_pdf(journal, progress_callback)
+            self.publish_pdf(journal, reduced, progress_callback)
 
 
     def publish_journal_templated_html(self, journal: Journal, progress_callback=None):
@@ -61,7 +61,7 @@ class PublishJournal:
         json_output.output_journal(journal)
         self.publication_location = self.output_handler.get_path('journal.json')
 
-    def publish_pdf(self, journal: Journal, progress_callback=None):
-        pdf_output = PdfOutput(self.output_handler, progress_callback)
+    def publish_pdf(self, journal: Journal, reduced, progress_callback=None):
+        pdf_output = PdfOutput(self.output_handler, reduced=reduced, progress_callback=progress_callback)
         pdf_output.output_journal(journal)
         self.publication_location = self.output_handler.get_pdf_path('journal.pdf')

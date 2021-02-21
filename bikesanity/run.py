@@ -94,8 +94,9 @@ def process_exported(journal_id, location, output_location):
 @click.option('--html', is_flag=True, default=False, help="Export as HTML")
 @click.option('--json', is_flag=True, default=False, help="Export as JSON")
 @click.option('--pdf', is_flag=True, default=False, help="Export as PDF")
+@click.option('--reduced', is_flag=True, default=False, help="Create a PDF with reduced image and text size")
 @click.option('--epub', is_flag=True, default=False, help="Export as EPUB")
-def publish(journal_id, input_location, output_location, html, json, pdf, epub):
+def publish(journal_id, input_location, output_location, html, json, pdf, reduced, epub):
     input_path = input_location if input_location else base_path
     output_path = output_location if output_location else base_path
 
@@ -118,7 +119,7 @@ def publish(journal_id, input_location, output_location, html, json, pdf, epub):
             journal_publisher.publish_journal_id(PublicationFormats.JSON_MODEL)
             log.info('Completed publishing to JSON! Published journal available in {0}'.format(journal_publisher.get_publication_location()))
         if pdf:
-            journal_publisher.publish_journal_id(PublicationFormats.PDF)
+            journal_publisher.publish_journal_id(PublicationFormats.PDF, reduced=reduced)
             log.info('Completed publishing to PDF! Published journal available in {0}'.format(journal_publisher.get_publication_location()))
 
     except Exception:
@@ -126,7 +127,7 @@ def publish(journal_id, input_location, output_location, html, json, pdf, epub):
 
 @run.command()
 def version():
-    print('BikeSanity script v1.1.0')
+    print('BikeSanity script v1.1.6')
 
 
 if __name__ == '__main__':
