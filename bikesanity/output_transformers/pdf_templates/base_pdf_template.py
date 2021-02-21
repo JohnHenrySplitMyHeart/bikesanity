@@ -1,14 +1,12 @@
-from fpdf import FPDF
-
 import os
 import shutil
+from fpdf import FPDF
 from bikesanity.io_utils.resources import create_temp_from_resource
 
 
-DEJAVU_FONT = 'DejaVu'
+class BasePdfTemplate(FPDF):
 
-
-class JournalPdf(FPDF):
+    DEJAVU_FONT = 'DejaVu'
 
     A4_WIDTH = 210
     A4_HEIGHT = 297
@@ -17,14 +15,9 @@ class JournalPdf(FPDF):
     TOP_MARGIN = 10
     PAGE_WIDTH = A4_WIDTH - (MARGIN*2)
 
-    IMAGE_SCALE = 1.2
-    IMAGE_WIDTH = (A4_WIDTH - (MARGIN*2))/IMAGE_SCALE
-    IMAGE_X = (PAGE_WIDTH/2) - (IMAGE_WIDTH/2)
-    CAPTION_WIDTH = 150
-
     IMAGE_DPI = 200
     MM_PER_INCH = 25.4
-
+    CAPTION_WIDTH = 150
 
     def __init__(self, title, author, part=None):
         self.draw_header = False
@@ -40,24 +33,26 @@ class JournalPdf(FPDF):
         self.load_font_resource('DejaVuSans-Oblique.ttf', 'I')
         self.page_title = title
         self.setup_pages()
+        self.image_pair = False
+        self.page_added = True
+        self.image_path = None
 
     def load_font_resource(self, font_name, weight):
         # Get a temporary file from the named resource
         temp_font_file = create_temp_from_resource(['fonts', font_name])
         # Add the font from this temporary file (only method FPDF supports)
-        self.add_font(DEJAVU_FONT, weight, temp_font_file, uni=True)
+        self.add_font(self.DEJAVU_FONT, weight, temp_font_file, uni=True)
         # Remove the temp file once its loaded
         self.tmp_files.append(temp_font_file)
 
+    def setup_pages(self):
+        self.set_font(self.DEJAVU_FONT, '', 14)
+        self.set_margins(self.MARGIN, self.TOP_MARGIN, self.MARGIN)
+        self.add_page()
 
     def update_page_title(self, name):
         self.draw_header = False
         self.page_title = name
-
-    def setup_pages(self):
-        self.set_font(DEJAVU_FONT, '', 14)
-        self.set_margins(self.MARGIN, self.TOP_MARGIN, self.MARGIN)
-        self.add_page()
 
     def limit_title(self, title, max_width=PAGE_WIDTH):
         terms = title.split(' ')
@@ -75,7 +70,7 @@ class JournalPdf(FPDF):
             self.draw_header = True
             return
 
-        self.set_font(DEJAVU_FONT, 'B', 12)
+        self.set_font(self.DEJAVU_FONT, 'B', 12)
 
         # Limit title if too long
         title = self.limit_title(self.page_title)
@@ -88,13 +83,17 @@ class JournalPdf(FPDF):
         self.cell(w, 9, title, 0, 1, 'C', 0)
         # Line break
         self.ln(10)
+        self.page_top = self.get_y()
 
     def footer(self):
+        # No footer on first few pages
         if self.page_no() < 3: return
+        # Don't draw footer if content overlaps
+        if self.get_y() > self.A4_HEIGHT - self.TOP_MARGIN: return
 
         # Position at 1.5 cm from bottom
         self.set_y(-15)
-        self.set_font(DEJAVU_FONT, 'I', 8)
+        self.set_font(self.DEJAVU_FONT, 'I', 8)
         # Text color in gray
         self.set_text_color(128)
 
@@ -104,46 +103,41 @@ class JournalPdf(FPDF):
         self.cell(0, 10, footer_text, 0, 0, 'C')
 
     def cover_title(self, title, subtitle, author, distance_statement, part=None):
-        self.set_font(DEJAVU_FONT, 'B', 20)
+        self.set_font(self.DEJAVU_FONT, 'B', 20)
 
         self.ln(15)
         # Title
         self.multi_cell(0, 20, title, 0, 'C', 0)
         self.ln(1)
         if part:
-            self.set_font(DEJAVU_FONT, '', 20)
+            self.set_font(self.DEJAVU_FONT, '', 20)
             self.cell(0, 5, 'Part {0}'.format(part), 0, 0, 'C')
             self.ln(6)
 
         # Line break
         self.ln(6)
-        self.set_font(DEJAVU_FONT, '', 16)
+        self.set_font(self.DEJAVU_FONT, '', 16)
         self.multi_cell(0, 10, subtitle, 0, 'C', 0)
         self.ln(4)
-        self.set_font(DEJAVU_FONT, 'I', 10)
+        self.set_font(self.DEJAVU_FONT, 'I', 10)
         self.multi_cell(0, 5, distance_statement, 0, 'C', 0)
         self.ln(5)
-        self.set_font(DEJAVU_FONT, '', 16)
+        self.set_font(self.DEJAVU_FONT, '', 16)
         self.multi_cell(0, 20, author, 0, 'C', 0)
         self.ln(8)
 
-    def section_title(self, title):
-        self.set_font(DEJAVU_FONT, 'B', 18)
-        self.multi_cell(0, 10, title, 0, 'C', 0)
-        self.ln(20)
-
     def add_toc(self, toc_items):
-        self.set_font(DEJAVU_FONT, 'B', 18)
+        self.set_font(self.DEJAVU_FONT, 'B', 18)
         self.cell(0, 5, 'Table of Contents', 0, 0, 'C', 0)
 
         self.ln(15)
-        self.set_font(DEJAVU_FONT, 'I', 9)
+        self.set_font(self.DEJAVU_FONT, 'I', 9)
 
         for toc_item in toc_items:
             if toc_item.is_header:
-                self.set_font(DEJAVU_FONT, 'B', 9)
+                self.set_font(self.DEJAVU_FONT, 'B', 9)
             else:
-                self.set_font(DEJAVU_FONT, 'I', 9)
+                self.set_font(self.DEJAVU_FONT, 'I', 9)
 
 
             # Limit the title if it's too long
@@ -164,8 +158,13 @@ class JournalPdf(FPDF):
             # Page number
             self.cell(page_cell_size, 9, toc_item.page_no, 0, 1,'R')
 
+    def section_title(self, title):
+        self.set_font(self.DEJAVU_FONT, 'B', 18)
+        self.multi_cell(0, 10, title, 0, 'C', 0)
+        self.ln(20)
+
     def chapter_title(self, label, date, distance, total_distance):
-        self.set_font(DEJAVU_FONT, 'B', 14)
+        self.set_font(self.DEJAVU_FONT, 'B', 14)
 
         # Colors of frame, background and text
         self.set_draw_color(0, 0, 0)
@@ -189,57 +188,25 @@ class JournalPdf(FPDF):
         else:
             distance_statement = distance
 
-        self.set_font(DEJAVU_FONT, 'I', 10)
+        self.set_font(self.DEJAVU_FONT, 'I', 10)
         self.cell(0, 5, distance_statement, 0, 0, 'L', 0)
         self.ln(20)
 
-    def text_content(self, text):
-        self.set_font("DejaVu", size=12)
-        self.multi_cell(w=0, h=8, txt=text, align='J')
-        self.ln(10)
+    def add_image_format_tolerant(self, image_path, x=None, y=None, width=None, height=None):
+        for ext in [ None, '.jpeg', '.png']:
+            if self.try_add_image(image_path, x, y, width, height, ext):
+                break
 
-
-    def try_add_image(self, image_path, height=None, ext=None):
+    def try_add_image(self, image_path, x, y, width, height, ext=None):
         updated_ext = image_path[:image_path.rfind('.')] + ext if ext else image_path
         if ext and image_path != updated_ext:
             shutil.copyfile(image_path, updated_ext)
         try:
-            if height:
-                self.image(updated_ext, h=height)
-            else:
-                self.image(updated_ext, w=self.IMAGE_WIDTH)
+            self.image(updated_ext, x=x, y=y, w=width if width else 0, h=height if height else 0)
             return True
-        except:
+        except Exception as exc:
             return False
 
-    def add_image_format_tolerant(self, image_path, height=None):
-        for ext in [ None, '.jpeg', '.png']:
-            if self.try_add_image(image_path, height, ext):
-                break
-
-    def add_image_large(self, image_path, caption):
-        self.add_image(image_path, caption)
-
-    def add_image(self, image_path, caption, height=None):
-        self.cell(w=self.IMAGE_X, align='L')
-
-        # Attempt to add the image in, trying different formats if the given extension is wrong (due to amateur treatment
-        # in the source)
-        self.add_image_format_tolerant(image_path, height)
-
-        # Don't break between the image and the caption
-        self.set_auto_page_break(False, margin=self.MARGIN)
-        self.set_font("DejaVu", style='I', size=10)
-        self.ln(5)
-        self.multi_cell(w=self.PAGE_WIDTH, h=5, txt=caption, align='C')
-        self.ln(9)
-        self.set_auto_page_break(True, margin=self.MARGIN)
-
-    def add_single_image(self):
-        pass
-
-    def add_page_if_near_bottom(self):
-        self.add_page()
 
     def clipping_rect(self, x, y, w, h, outline=False):
         op= 'S' if outline else 'n'

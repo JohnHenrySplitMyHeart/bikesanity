@@ -2,8 +2,8 @@ import bikesanity.io_utils.log_handler as log_handler
 from bikesanity.entities.content_blocks import Image, Map, TextBlock
 from bikesanity.entities.journal import Journal
 
-from .journal_pdf import JournalPdf
-from .journal_pdf_reduced import JournalPdfReduced
+from .pdf_templates.journal_pdf import JournalPdf
+from .pdf_templates.journal_pdf_reduced import JournalPdfReduced
 
 
 class PdfTocEntry:
@@ -60,6 +60,7 @@ class PdfOutput:
 
     def create_journal_pdf(self, journal: Journal, part):
         if self.reduced:
+            log_handler.log.info('Using reduced size text and images')
             return JournalPdfReduced(title=journal.journal_title, author=journal.journal_author, part=part)
         else:
             return JournalPdf(title=journal.journal_title, author=journal.journal_author, part=part)
