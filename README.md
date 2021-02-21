@@ -102,12 +102,12 @@ Following processing, a complete object model of the journal will be created and
 
 Currently it possible to publish processed journals to HTML, PDF documents, or a JSON data structure. Publish any processed journal using the `publish` argument and providing the same _journal id_:
 
-    bikesanity-run publish <12345> --html --pdf --json
+    bikesanity-run publish <12345> --html --pdf --reduced --json
 
 Use any combination of the optional flags to generate HTML, PDF or JSON output:
 
 - `--html` will produce attractive and clean HTML that can be fully-functionally browsed on the local machine, including dynamic maps.
-- `--pdf` will generate a collected PDF document of the journal, including all images. Large journals may be split into several PDF parts
+- `--pdf` will generate a collected PDF document of the journal, including all images. Large journals may be split into several PDF parts. **New** - if you would like a more condensed, print-friendly PDF, you can use the `--reduced` flag to reduce the text and picture size, and layout pictures side-by-side.
 - `--json` will generate a simple JSON data structure that may be used to migrate the journal to other platforms
 
 By default, HTML is output inside the processed directory, at `CycleSanityJournals/processed/<journal_id>/html` - open `index.html` to browse the journal index.
