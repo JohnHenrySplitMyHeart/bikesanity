@@ -217,6 +217,9 @@ class JournalPdf(FPDF):
             if self.try_add_image(image_path, height, ext):
                 break
 
+    def add_image_large(self, image_path, caption):
+        self.add_image(image_path, caption)
+
     def add_image(self, image_path, caption, height=None):
         self.cell(w=self.IMAGE_X, align='L')
 
@@ -231,6 +234,12 @@ class JournalPdf(FPDF):
         self.multi_cell(w=self.PAGE_WIDTH, h=5, txt=caption, align='C')
         self.ln(9)
         self.set_auto_page_break(True, margin=self.MARGIN)
+
+    def add_single_image(self):
+        pass
+
+    def add_page_if_near_bottom(self):
+        self.add_page()
 
     def clipping_rect(self, x, y, w, h, outline=False):
         op= 'S' if outline else 'n'

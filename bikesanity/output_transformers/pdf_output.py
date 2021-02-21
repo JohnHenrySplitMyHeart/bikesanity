@@ -3,6 +3,7 @@ from bikesanity.entities.content_blocks import Image, Map, TextBlock
 from bikesanity.entities.journal import Journal
 
 from .journal_pdf import JournalPdf
+from .journal_pdf_reduced import JournalPdfReduced
 
 
 class PdfTocEntry:
@@ -17,8 +18,9 @@ class PdfOutput:
     MAX_PDF_SECTIONS = 25
 
 
-    def __init__(self, local_handler, progress_callback=None):
+    def __init__(self, local_handler, reduced=False, progress_callback=None):
         self.local_handler = local_handler
+        self.reduced = reduced
         self.progress_callback = progress_callback
 
     def progress_update(self, percent):
@@ -56,9 +58,15 @@ class PdfOutput:
         # Update progress
         self.progress_update(percent=100)
 
+    def create_journal_pdf(self, journal: Journal, part):
+        if self.reduced:
+            return JournalPdfReduced(title=journal.journal_title, author=journal.journal_author, part=part)
+        else:
+            return JournalPdf(title=journal.journal_title, author=journal.journal_author, part=part)
+
 
     def output_journal_part(self, journal: Journal, contents, part=None, from_page=None, start_progress=0, part_progress=100):
-        journal_pdf = JournalPdf(title=journal.journal_title, author=journal.journal_author, part=part)
+        journal_pdf = self.create_journal_pdf(journal, part)
 
         # Create a cover
         journal_pdf.set_auto_page_break(False, margin=journal_pdf.MARGIN)
@@ -66,11 +74,12 @@ class PdfOutput:
 
         journal_pdf.clipping_rect(0, 100, journal_pdf.A4_WIDTH, 180, False)
         if journal.cover_image:
-            self.output_image(journal_pdf, journal.cover_image)
+            self.output_image_large(journal_pdf, journal.cover_image)
         journal_pdf.set_auto_page_break(True, margin=journal_pdf.MARGIN)
         journal_pdf.unset_clipping()
 
         # Leave space for the TOC
+        if self.reduced: journal_pdf.add_page()
         journal_pdf.add_page()
 
         pdf_toc = []
@@ -87,7 +96,9 @@ class PdfOutput:
 
                 journal_pdf.update_page_title(toc_item.page.title)
 
-                if new_page_needed: journal_pdf.add_page()
+                if new_page_needed:
+                    journal_pdf.add_page_if_near_bottom()
+
                 pdf_toc.append(PdfTocEntry(toc_item.page.title, journal_pdf.page_no()-2, False))
 
                 journal_pdf.chapter_title(
@@ -103,6 +114,9 @@ class PdfOutput:
                     elif isinstance(content, Map):
                         self.output_map(journal_pdf, content)
 
+                # Flush any single images if needed
+                journal_pdf.add_single_image()
+                if self.reduced: journal_pdf.ln(8)
                 new_page_needed = True
 
             elif toc_item.title:
@@ -149,6 +163,10 @@ class PdfOutput:
     def output_image(self, journal_pdf: JournalPdf, image: Image, height=None):
         url_fullsize = self.output_pic(image)
         journal_pdf.add_image(url_fullsize, image.caption, height=height)
+
+    def output_image_large(self, journal_pdf: JournalPdf, image: Image):
+        url_fullsize = self.output_pic(image)
+        journal_pdf.add_image_large(url_fullsize, image.caption)
 
     def output_map(self, journal_pdf: JournalPdf, map: Map):
         pass
